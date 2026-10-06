@@ -59,6 +59,7 @@ function FeedPage() {
     }
   };
 
+  
   const getCurrentPosts = () => {
     switch (activeTab) {
       case "trending":

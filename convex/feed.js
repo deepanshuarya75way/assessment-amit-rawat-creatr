@@ -25,11 +25,11 @@ export const getFeed = query({
           ...post,
           author: author
             ? {
-                _id: author._id,
-                name: author.name,
-                username: author.username,
-                imageUrl: author.imageUrl,
-              }
+              _id: author._id,
+              name: author.name,
+              username: author.username,
+              imageUrl: author.imageUrl,
+            }
             : null,
         };
       }),
@@ -146,7 +146,7 @@ export const getSuggestedUsers = query({
   },
 });
 
-export const getTrendingPosts = query({
+export const getTrendingPost = query({
   args: { limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
     const limit = args.limit || 10;
@@ -177,11 +177,56 @@ export const getTrendingPosts = query({
           ...post,
           author: author
             ? {
-                _id: author._id,
-                name: author.name,
-                username: author.username,
-                imageUrl: author.imageUrl,
-              }
+              _id: author._id,
+              name: author.name,
+              username: author.username,
+              imageUrl: author.imageUrl,
+            }
+            : null,
+        };
+      }),
+    );
+
+    return postsWithAuthors.filter((post) => post.author !== null);
+  },
+});
+
+export const getTrendingPosts = query({
+  args: { limit: v.optional(v.number()) },
+  handler: async (ctx, args) => {
+    const limit = args.limit || 10;
+    const sixMonthago = Date.now() - 6 * 30 * 24 * 60 * 60 * 1000
+
+    const recentPosts = await ctx.db
+      .query("posts")
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("status"), "published"),
+          q.gte(q.field("publishedAt"), sixMonthago),
+        ),
+      )
+      .collect();
+
+    const trendingPost = recentPosts
+      .map((post) => ({
+        ...post,
+        trendingScore: post.viewCount + post.likeCount * 3,
+      }))
+      .sort((a, b) => b.trendingScore - a.trendingScore)
+      .slice(0, limit);
+
+    const postsWithAuthors = await Promise.all(
+      trendingPost.map(async (post) => {
+        const author = await ctx.db.get(post.authorId);
+        return {
+          ...post,
+          author: author
+            ? {
+              _id: author._id,
+              name: author.name,
+              username: author.username,
+              imageUrl: author.imageUrl,
+            }
             : null,
         };
       }),

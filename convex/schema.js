@@ -10,6 +10,7 @@ export default defineSchema({
     username: v.optional(v.string()),
     createdAt: v.number(),
     LastActiveAt: v.number(),
+    badges: v.optional(v.array(v.string()))
   })
     .index("by_token", ["tokenIdentifier"])
     .index("by_email", ["email"])

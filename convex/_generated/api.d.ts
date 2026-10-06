@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as badge from "../badge.js";
 import type * as comments from "../comments.js";
 import type * as dashboard from "../dashboard.js";
 import type * as feed from "../feed.js";
@@ -15,6 +16,7 @@ import type * as follows from "../follows.js";
 import type * as likes from "../likes.js";
 import type * as posts from "../posts.js";
 import type * as public_ from "../public.js";
+import type * as stats from "../stats.js";
 import type * as user from "../user.js";
 
 import type {
@@ -24,6 +26,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  badge: typeof badge;
   comments: typeof comments;
   dashboard: typeof dashboard;
   feed: typeof feed;
@@ -31,6 +34,7 @@ declare const fullApi: ApiFromModules<{
   likes: typeof likes;
   posts: typeof posts;
   public: typeof public_;
+  stats: typeof stats;
   user: typeof user;
 }>;
 
